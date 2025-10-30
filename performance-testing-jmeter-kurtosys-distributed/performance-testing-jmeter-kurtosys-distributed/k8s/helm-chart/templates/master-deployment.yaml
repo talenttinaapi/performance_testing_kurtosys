@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jmeter-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jmeter-master
+  template:
+    metadata:
+      labels:
+        app: jmeter-master
+    spec:
+      containers:
+        - name: jmeter-master
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["jmeter", "-n", "-t", "/test/testplan.jmx", "-R", "jmeter-slave-0,jmeter-slave-1", "-l", "/test/results.jtl", "-e", "-o", "/test/reports"]
+          volumeMounts:
+            - name: test-plan
+              mountPath: /test
+      volumes:
+        - name: test-plan
+          configMap:
+            name: jmeter-testplan

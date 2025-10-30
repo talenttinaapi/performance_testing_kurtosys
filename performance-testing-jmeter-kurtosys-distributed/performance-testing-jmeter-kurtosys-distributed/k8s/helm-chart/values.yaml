@@ -1,0 +1,21 @@
+replicaCount: 1
+
+image:
+  repository: yourrepo/jmeter
+  tag: latest
+  pullPolicy: IfNotPresent
+
+slave:
+  replicaCount: 2
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+
+master:
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+
+service:
+  type: ClusterIP
+  port: 1099

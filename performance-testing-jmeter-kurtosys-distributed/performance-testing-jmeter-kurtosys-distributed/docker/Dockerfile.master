@@ -1,0 +1,5 @@
+FROM justb4/jmeter:5.6.3
+COPY ./jmeter /test
+WORKDIR /test
+# Entrypoint for master to run test against remote slaves (names by compose)
+CMD ["jmeter", "-n", "-t", "testplan.jmx", "-R", "jmeter-slave1,jmeter-slave2", "-l", "results.jtl", "-e", "-o", "reports", "-j", "jmeter.log"]

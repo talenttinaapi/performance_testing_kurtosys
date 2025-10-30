@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  jmeter-master:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.master
+    container_name: jmeter-master
+    volumes:
+      - ./jmeter:/test
+      - ./reports:/test/reports
+    depends_on:
+      - jmeter-slave1
+      - jmeter-slave2
+
+  jmeter-slave1:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.slave
+    container_name: jmeter-slave1
+    ports:
+      - "1099:1099"
+      - "60000-60010:60000-60010"
+
+  jmeter-slave2:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.slave
+    container_name: jmeter-slave2
+    ports:
+      - "1100:1099"
+      - "61000-61010:60000-60010"

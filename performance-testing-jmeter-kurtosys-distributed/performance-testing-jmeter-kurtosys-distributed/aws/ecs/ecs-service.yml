@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ECS service for JMeter master (Fargate)
+Resources:
+  JMeterCluster:
+    Type: AWS::ECS::Cluster
+
+  JMeterTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: jmeter-master-task
+      Cpu: 1024
+      Memory: 2048
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ContainerDefinitions:
+        - Name: jmeter-master
+          Image: yourrepo/jmeter:latest
+          Command: ["jmeter","-n","-t","/test/testplan.jmx","-R","jmeter-slave1,jmeter-slave2","-l","results.jtl","-e","-o","reports"]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: /ecs/jmeter
+              awslogs-region: us-east-1
+              awslogs-stream-prefix: jmeter
+
+  JMeterService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref JMeterCluster
+      DesiredCount: 1
+      LaunchType: FARGATE
+      TaskDefinition: !Ref JMeterTaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: [subnet-xxxx]
+          SecurityGroups: [sg-xxxx]

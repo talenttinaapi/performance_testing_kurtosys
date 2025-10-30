@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jmeter-slave
+spec:
+  replicas: {{ .Values.slave.replicaCount }}
+  selector:
+    matchLabels:
+      app: jmeter-slave
+  template:
+    metadata:
+      labels:
+        app: jmeter-slave
+    spec:
+      containers:
+        - name: jmeter-slave
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["jmeter-server", "-Djava.rmi.server.hostname=0.0.0.0"]
+          ports:
+            - containerPort: 1099
